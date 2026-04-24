@@ -3,8 +3,18 @@ export interface User {
   phone: string;
   first_name: string;
   last_name: string;
+  middle_name?: string;
   avatar_url?: string;
   inn?: string;
+  snils?: string;
+  passport_series?: string;
+  passport_number?: string;
+  address?: string;
+  birth_date?: string;
+  gender?: string;
+  phone_verified?: boolean;
+  gosuslugi_linked?: boolean;
+  gosuslugi_data?: Record<string, unknown>;
   created_at?: string;
 }
 

@@ -177,18 +177,31 @@ export default function CountryPage({ user }: CountryPageProps) {
           ))}
         </div>
 
-        {/* Интеграция с госуслугами - информация */}
-        <div className="bg-gradient-to-r from-primary/10 to-blue-100 rounded-2xl p-4 border border-primary/20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <Icon name="Link" size={20} className="text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-foreground text-sm">Интеграция с Госуслугами</p>
-              <p className="text-xs text-muted-foreground">Синхронизация данных подключена</p>
+        {/* Статус Госуслуг */}
+        {user.gosuslugi_linked ? (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-200">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏛️</span>
+              <div className="flex-1">
+                <p className="font-semibold text-blue-900 text-sm">Госуслуги подключены</p>
+                <p className="text-xs text-blue-600">Документы синхронизированы · Все сервисы доступны</p>
+              </div>
+              <Icon name="CheckCircle" size={20} className="text-green-500" />
             </div>
           </div>
-        </div>
+        ) : (
+          <button onClick={() => setSection('gosuslugi')}
+            className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border-2 border-dashed border-blue-300 text-left hover:border-blue-500 transition-colors">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏛️</span>
+              <div className="flex-1">
+                <p className="font-semibold text-blue-900 text-sm">Подключить Госуслуги</p>
+                <p className="text-xs text-blue-600">Автоимпорт документов, льготы, субсидии</p>
+              </div>
+              <Icon name="ChevronRight" size={18} className="text-blue-400" />
+            </div>
+          </button>
+        )}
       </div>
     );
   }
@@ -425,32 +438,84 @@ export default function CountryPage({ user }: CountryPageProps) {
       {/* Госуслуги */}
       {section === 'gosuslugi' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border p-5 text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Icon name="Globe" size={32} className="text-purple-600" />
+          {/* Статус подключения */}
+          {user.gosuslugi_linked ? (
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <Icon name="CheckCircle" size={22} className="text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-green-900 text-sm">Аккаунт синхронизирован</p>
+                <p className="text-green-700 text-xs">Данные из Госуслуг загружены и актуальны</p>
+              </div>
             </div>
-            <h3 className="font-bold text-lg mb-2">Интеграция с Госуслугами</h3>
-            <p className="text-muted-foreground text-sm mb-4">Ваш аккаунт на Югару синхронизирован с национальным порталом государственных услуг</p>
-            <div className="space-y-2 text-left">
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🏛️</span>
+                <div>
+                  <p className="font-semibold text-blue-900 text-sm">Госуслуги не подключены</p>
+                  <p className="text-blue-700 text-xs mb-2">Подключите для автозаполнения документов и доступа ко всем сервисам</p>
+                  <p className="text-blue-600 text-xs">→ Перейдите в раздел «Профиль» для подключения</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Список сервисов */}
+          <div className="bg-white rounded-2xl border overflow-hidden">
+            <div className="px-4 py-3 border-b bg-muted/40">
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Доступные сервисы</p>
+            </div>
+            <div className="divide-y">
               {[
-                { label: 'Регистрация актов гражданского состояния', icon: 'FileCheck' },
-                { label: 'Загранпаспорт', icon: 'Plane' },
-                { label: 'Льготы и субсидии', icon: 'HandHeart' },
-                { label: 'Пенсионное страхование', icon: 'PiggyBank' },
-                { label: 'Постановка на учёт ТС', icon: 'Car' },
-                { label: 'Сведения о недвижимости', icon: 'Home' },
+                { label: 'Регистрация актов гражданского состояния', icon: 'FileCheck', available: true },
+                { label: 'Загранпаспорт', icon: 'Plane', available: true },
+                { label: 'Льготы и субсидии', icon: 'HandHeart', available: user.gosuslugi_linked },
+                { label: 'Пенсионное страхование', icon: 'PiggyBank', available: user.gosuslugi_linked },
+                { label: 'Постановка на учёт ТС', icon: 'Car', available: true },
+                { label: 'Сведения о недвижимости', icon: 'Home', available: user.gosuslugi_linked },
+                { label: 'Налоговые вычеты', icon: 'Receipt', available: user.gosuslugi_linked },
+                { label: 'Социальные выплаты', icon: 'Banknote', available: user.gosuslugi_linked },
               ].map(s => (
-                <div key={s.label} className="flex items-center gap-3 p-3 rounded-xl bg-muted hover:bg-muted/70 cursor-pointer transition-colors">
-                  <Icon name={s.icon} size={18} className="text-purple-600" />
-                  <span className="text-sm font-medium">{s.label}</span>
-                  <Icon name="ChevronRight" size={16} className="ml-auto text-muted-foreground" />
+                <div key={s.label} className={`flex items-center gap-3 px-4 py-3 transition-colors ${s.available ? 'hover:bg-muted/40 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}>
+                  <Icon name={s.icon} size={18} className={s.available ? 'text-blue-600' : 'text-muted-foreground'} />
+                  <span className="text-sm font-medium flex-1">{s.label}</span>
+                  {s.available
+                    ? <Icon name="ChevronRight" size={16} className="text-muted-foreground" />
+                    : <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">Нужны Госуслуги</span>
+                  }
                 </div>
               ))}
             </div>
           </div>
-          <div className="bg-green-50 rounded-2xl border border-green-200 p-4 flex items-center gap-3">
-            <Icon name="ShieldCheck" size={24} className="text-green-600" />
-            <p className="text-sm text-green-800">Данные защищены по стандартам ГОСТ Р 57580</p>
+
+          {/* Документы из Госуслуг */}
+          {user.gosuslugi_linked && user.gosuslugi_data && (
+            <div className="bg-white rounded-2xl border overflow-hidden">
+              <div className="px-4 py-3 border-b bg-muted/40">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Импортированные документы</p>
+              </div>
+              <div className="p-4 space-y-2">
+                {[
+                  { label: 'Паспорт гражданина Югании', icon: 'BookOpen', color: 'text-primary' },
+                  { label: 'СНИЛС', icon: 'CreditCard', color: 'text-green-600' },
+                  { label: 'ИНН', icon: 'Hash', color: 'text-amber-600' },
+                  { label: 'Полис ОМС', icon: 'Stethoscope', color: 'text-red-500' },
+                ].map(d => (
+                  <div key={d.label} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/50">
+                    <Icon name={d.icon} size={18} className={d.color} />
+                    <span className="text-sm font-medium">{d.label}</span>
+                    <span className="ml-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Загружен</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="bg-muted rounded-xl p-3 flex items-center gap-2.5">
+            <Icon name="ShieldCheck" size={18} className="text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Данные защищены по стандартам ГОСТ Р 57580. Передача по зашифрованному каналу.</p>
           </div>
         </div>
       )}

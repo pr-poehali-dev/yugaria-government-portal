@@ -14,13 +14,25 @@ function authHeaders() {
 }
 
 export const api = {
-  // Auth
-  register: (phone: string, first_name: string, last_name: string) =>
-    fetch(`${AUTH_URL}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, first_name, last_name }) }).then(r => r.json()),
+  // Auth — SMS
+  sendSms: (phone: string) =>
+    fetch(`${AUTH_URL}/send-sms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }).then(r => r.json()),
 
-  login: (phone: string, first_name: string, last_name: string) =>
-    fetch(`${AUTH_URL}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, first_name, last_name }) }).then(r => r.json()),
+  verifySms: (phone: string, code: string, bypass = false) =>
+    fetch(`${AUTH_URL}/verify-sms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code, bypass }) }).then(r => r.json()),
 
+  // Auth — Register / Login
+  register: (data: Record<string, string>) =>
+    fetch(`${AUTH_URL}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json()),
+
+  login: (phone: string) =>
+    fetch(`${AUTH_URL}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }).then(r => r.json()),
+
+  // Госуслуги OAuth (имитация)
+  loginGosuslugi: (data: Record<string, string>) =>
+    fetch(`${AUTH_URL}/gosuslugi`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(r => r.json()),
+
+  // Profile
   getMe: () =>
     fetch(`${AUTH_URL}/me`, { headers: authHeaders() }).then(r => r.json()),
 
